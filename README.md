@@ -6,9 +6,13 @@ This small, standard-library Python experiment sends a simulated burst through a
 
 ## Run an experiment
 
+[Example results](examples/) · [Method and metric definitions](METHODOLOGY.md) · [CI](https://github.com/skyon0522-ai/retry-budget-lab/actions/workflows/ci.yml)
+
 Python 3.10 or later; no runtime dependencies or installation required:
 
 ```sh
+git clone https://github.com/skyon0522-ai/retry-budget-lab.git
+cd retry-budget-lab
 python -m retry_budget_lab --output results.json
 python -m unittest discover -s tests -v
 ```
@@ -46,6 +50,12 @@ python -m retry_budget_lab --clients 40 --base-seconds 0.1 --deadline-seconds 0.
 ```
 
 All requests arrive together, so peak backlog is the burst size and peak queue is the burst size minus available servers: 200/190 or 40/30 in these examples. This metric does not demonstrate a jitter benefit. The simulator uses individual arrival, completion, and deadline events; it does not infer contention from counts in arbitrary time buckets.
+
+## Repeat and compare runs
+
+Use a new output filename for each experiment: writing to an existing output file replaces it. Start from one of the recorded scenarios, change one parameter, and compare completed requests and total attempts before comparing successful-request latency. Keep the seed list fixed for that comparison, then vary it to check sensitivity.
+
+Each JSON result stores the configuration and seeds needed to rerun it. The simulator does not contact a service or change a client configuration; there is no deployed state to restore. Applying a policy to a real client requires the additional checks described below.
 
 ## What the model means
 
