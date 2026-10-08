@@ -73,8 +73,6 @@ The experiment is original code; no upstream implementation was copied. Its inpu
 
 Use measured arrival patterns, service costs, timeout behavior, and downstream limits before drawing operational conclusions. AI integrations also need explicit policies for idempotency, token/cost limits, streaming, and partially completed operations; this experiment does not model those concerns.
 
-[Livoleta](https://livoleta.com/contact/) offers AI integration, business-system design, and cloud infrastructure work. A focused reliability review can turn an integration's retry behavior, deadlines, and operational constraints into testable acceptance criteria. [LinkedIn](https://www.linkedin.com/in/%E4%BA%AC%E4%BB%8B-%E9%BD%8B%E8%97%A4-5a84843a3/).
-
 ## Development
 
 ```sh
