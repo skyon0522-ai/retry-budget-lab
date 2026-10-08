@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "retry-budget-lab"
+version = "0.1.0"
+description = "Reproducible finite-capacity experiments for retry budgets and deadlines"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "skyon0522-ai"}]
+dependencies = []
+
+[project.scripts]
+retry-budget-lab = "retry_budget_lab:main"
+
+[tool.setuptools]
+py-modules = ["retry_budget_lab"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

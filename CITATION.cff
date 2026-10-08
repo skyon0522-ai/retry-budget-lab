@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If this experiment supports your work, cite the software and the relevant sources in references.bib."
+title: "Retry Budget Lab"
+type: software
+authors:
+  - family-names: "skyon0522-ai"
+version: 0.1.0
+license: MIT
+abstract: "A reproducible discrete-event experiment for retry amplification, finite service capacity, deadlines, and shared retry budgets."
+keywords:
+  - retry
+  - reliability
+  - discrete-event simulation
+  - tail latency

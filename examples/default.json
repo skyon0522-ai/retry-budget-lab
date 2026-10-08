@@ -1,0 +1,507 @@
+{
+  "comparisons": {
+    "capped": {
+      "aggregate": {
+        "attempt_limit_misses": {
+          "max": 0,
+          "mean": 0.0,
+          "min": 0
+        },
+        "attempts": {
+          "max": 350,
+          "mean": 350.0,
+          "min": 350
+        },
+        "attempts_completed": {
+          "max": 350,
+          "mean": 350.0,
+          "min": 350
+        },
+        "attempts_started": {
+          "max": 350,
+          "mean": 350.0,
+          "min": 350
+        },
+        "completions_at_or_after_deadline": {
+          "max": 0,
+          "mean": 0.0,
+          "min": 0
+        },
+        "deadline_misses": {
+          "max": 0,
+          "mean": 0.0,
+          "min": 0
+        },
+        "last_completion_seconds": {
+          "max": 0.7000000000000003,
+          "mean": 0.7000000000000003,
+          "min": 0.7000000000000003
+        },
+        "last_request_terminal_seconds": {
+          "max": 0.7000000000000003,
+          "mean": 0.7000000000000003,
+          "min": 0.7000000000000003
+        },
+        "load_amplification": {
+          "max": 1.75,
+          "mean": 1.75,
+          "min": 1.75
+        },
+        "misses": {
+          "max": 0,
+          "mean": 0.0,
+          "min": 0
+        },
+        "peak_backlog": {
+          "max": 200,
+          "mean": 200.0,
+          "min": 200
+        },
+        "peak_busy_servers": {
+          "max": 10,
+          "mean": 10.0,
+          "min": 10
+        },
+        "peak_queue": {
+          "max": 190,
+          "mean": 190.0,
+          "min": 190
+        },
+        "queued_attempts_abandoned": {
+          "max": 0,
+          "mean": 0.0,
+          "min": 0
+        },
+        "retry_attempts": {
+          "max": 150,
+          "mean": 150.0,
+          "min": 150
+        },
+        "retry_budget_misses": {
+          "max": 0,
+          "mean": 0.0,
+          "min": 0
+        },
+        "service_work_after_deadline_seconds": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0
+        },
+        "service_work_seconds": {
+          "max": 7.0,
+          "mean": 7.0,
+          "min": 7.0
+        },
+        "successes": {
+          "max": 200,
+          "mean": 200.0,
+          "min": 200
+        }
+      },
+      "pooled_success_count": 1000,
+      "pooled_success_latency_seconds": {
+        "p50": 0.5000000000000001,
+        "p95": 0.6800000000000003,
+        "p99": 0.7000000000000003
+      },
+      "runs": [
+        {
+          "attempt_limit_misses": 0,
+          "attempts": 350,
+          "attempts_completed": 350,
+          "attempts_started": 350,
+          "completions_at_or_after_deadline": 0,
+          "deadline_misses": 0,
+          "last_completion_seconds": 0.7000000000000003,
+          "last_request_terminal_seconds": 0.7000000000000003,
+          "load_amplification": 1.75,
+          "misses": 0,
+          "peak_backlog": 200,
+          "peak_busy_servers": 10,
+          "peak_queue": 190,
+          "queued_attempts_abandoned": 0,
+          "retry_attempts": 150,
+          "retry_budget_misses": 0,
+          "seed": 0,
+          "service_work_after_deadline_seconds": 0.0,
+          "service_work_seconds": 7.0,
+          "success_latency_seconds": {
+            "p50": 0.5000000000000001,
+            "p95": 0.6800000000000003,
+            "p99": 0.7000000000000003
+          },
+          "successes": 200
+        },
+        {
+          "attempt_limit_misses": 0,
+          "attempts": 350,
+          "attempts_completed": 350,
+          "attempts_started": 350,
+          "completions_at_or_after_deadline": 0,
+          "deadline_misses": 0,
+          "last_completion_seconds": 0.7000000000000003,
+          "last_request_terminal_seconds": 0.7000000000000003,
+          "load_amplification": 1.75,
+          "misses": 0,
+          "peak_backlog": 200,
+          "peak_busy_servers": 10,
+          "peak_queue": 190,
+          "queued_attempts_abandoned": 0,
+          "retry_attempts": 150,
+          "retry_budget_misses": 0,
+          "seed": 1,
+          "service_work_after_deadline_seconds": 0.0,
+          "service_work_seconds": 7.0,
+          "success_latency_seconds": {
+            "p50": 0.5000000000000001,
+            "p95": 0.6800000000000003,
+            "p99": 0.7000000000000003
+          },
+          "successes": 200
+        },
+        {
+          "attempt_limit_misses": 0,
+          "attempts": 350,
+          "attempts_completed": 350,
+          "attempts_started": 350,
+          "completions_at_or_after_deadline": 0,
+          "deadline_misses": 0,
+          "last_completion_seconds": 0.7000000000000003,
+          "last_request_terminal_seconds": 0.7000000000000003,
+          "load_amplification": 1.75,
+          "misses": 0,
+          "peak_backlog": 200,
+          "peak_busy_servers": 10,
+          "peak_queue": 190,
+          "queued_attempts_abandoned": 0,
+          "retry_attempts": 150,
+          "retry_budget_misses": 0,
+          "seed": 2,
+          "service_work_after_deadline_seconds": 0.0,
+          "service_work_seconds": 7.0,
+          "success_latency_seconds": {
+            "p50": 0.5000000000000001,
+            "p95": 0.6800000000000003,
+            "p99": 0.7000000000000003
+          },
+          "successes": 200
+        },
+        {
+          "attempt_limit_misses": 0,
+          "attempts": 350,
+          "attempts_completed": 350,
+          "attempts_started": 350,
+          "completions_at_or_after_deadline": 0,
+          "deadline_misses": 0,
+          "last_completion_seconds": 0.7000000000000003,
+          "last_request_terminal_seconds": 0.7000000000000003,
+          "load_amplification": 1.75,
+          "misses": 0,
+          "peak_backlog": 200,
+          "peak_busy_servers": 10,
+          "peak_queue": 190,
+          "queued_attempts_abandoned": 0,
+          "retry_attempts": 150,
+          "retry_budget_misses": 0,
+          "seed": 3,
+          "service_work_after_deadline_seconds": 0.0,
+          "service_work_seconds": 7.0,
+          "success_latency_seconds": {
+            "p50": 0.5000000000000001,
+            "p95": 0.6800000000000003,
+            "p99": 0.7000000000000003
+          },
+          "successes": 200
+        },
+        {
+          "attempt_limit_misses": 0,
+          "attempts": 350,
+          "attempts_completed": 350,
+          "attempts_started": 350,
+          "completions_at_or_after_deadline": 0,
+          "deadline_misses": 0,
+          "last_completion_seconds": 0.7000000000000003,
+          "last_request_terminal_seconds": 0.7000000000000003,
+          "load_amplification": 1.75,
+          "misses": 0,
+          "peak_backlog": 200,
+          "peak_busy_servers": 10,
+          "peak_queue": 190,
+          "queued_attempts_abandoned": 0,
+          "retry_attempts": 150,
+          "retry_budget_misses": 0,
+          "seed": 4,
+          "service_work_after_deadline_seconds": 0.0,
+          "service_work_seconds": 7.0,
+          "success_latency_seconds": {
+            "p50": 0.5000000000000001,
+            "p95": 0.6800000000000003,
+            "p99": 0.7000000000000003
+          },
+          "successes": 200
+        }
+      ]
+    },
+    "full-jitter": {
+      "aggregate": {
+        "attempt_limit_misses": {
+          "max": 0,
+          "mean": 0.0,
+          "min": 0
+        },
+        "attempts": {
+          "max": 350,
+          "mean": 350.0,
+          "min": 350
+        },
+        "attempts_completed": {
+          "max": 350,
+          "mean": 350.0,
+          "min": 350
+        },
+        "attempts_started": {
+          "max": 350,
+          "mean": 350.0,
+          "min": 350
+        },
+        "completions_at_or_after_deadline": {
+          "max": 0,
+          "mean": 0.0,
+          "min": 0
+        },
+        "deadline_misses": {
+          "max": 0,
+          "mean": 0.0,
+          "min": 0
+        },
+        "last_completion_seconds": {
+          "max": 0.7000000000000003,
+          "mean": 0.7000000000000003,
+          "min": 0.7000000000000003
+        },
+        "last_request_terminal_seconds": {
+          "max": 0.7000000000000003,
+          "mean": 0.7000000000000003,
+          "min": 0.7000000000000003
+        },
+        "load_amplification": {
+          "max": 1.75,
+          "mean": 1.75,
+          "min": 1.75
+        },
+        "misses": {
+          "max": 0,
+          "mean": 0.0,
+          "min": 0
+        },
+        "peak_backlog": {
+          "max": 200,
+          "mean": 200.0,
+          "min": 200
+        },
+        "peak_busy_servers": {
+          "max": 10,
+          "mean": 10.0,
+          "min": 10
+        },
+        "peak_queue": {
+          "max": 190,
+          "mean": 190.0,
+          "min": 190
+        },
+        "queued_attempts_abandoned": {
+          "max": 0,
+          "mean": 0.0,
+          "min": 0
+        },
+        "retry_attempts": {
+          "max": 150,
+          "mean": 150.0,
+          "min": 150
+        },
+        "retry_budget_misses": {
+          "max": 0,
+          "mean": 0.0,
+          "min": 0
+        },
+        "service_work_after_deadline_seconds": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0
+        },
+        "service_work_seconds": {
+          "max": 7.0,
+          "mean": 7.0,
+          "min": 7.0
+        },
+        "successes": {
+          "max": 200,
+          "mean": 200.0,
+          "min": 200
+        }
+      },
+      "pooled_success_count": 1000,
+      "pooled_success_latency_seconds": {
+        "p50": 0.5000000000000001,
+        "p95": 0.6800000000000003,
+        "p99": 0.7000000000000003
+      },
+      "runs": [
+        {
+          "attempt_limit_misses": 0,
+          "attempts": 350,
+          "attempts_completed": 350,
+          "attempts_started": 350,
+          "completions_at_or_after_deadline": 0,
+          "deadline_misses": 0,
+          "last_completion_seconds": 0.7000000000000003,
+          "last_request_terminal_seconds": 0.7000000000000003,
+          "load_amplification": 1.75,
+          "misses": 0,
+          "peak_backlog": 200,
+          "peak_busy_servers": 10,
+          "peak_queue": 190,
+          "queued_attempts_abandoned": 0,
+          "retry_attempts": 150,
+          "retry_budget_misses": 0,
+          "seed": 0,
+          "service_work_after_deadline_seconds": 0.0,
+          "service_work_seconds": 7.0,
+          "success_latency_seconds": {
+            "p50": 0.5000000000000001,
+            "p95": 0.6800000000000003,
+            "p99": 0.7000000000000003
+          },
+          "successes": 200
+        },
+        {
+          "attempt_limit_misses": 0,
+          "attempts": 350,
+          "attempts_completed": 350,
+          "attempts_started": 350,
+          "completions_at_or_after_deadline": 0,
+          "deadline_misses": 0,
+          "last_completion_seconds": 0.7000000000000003,
+          "last_request_terminal_seconds": 0.7000000000000003,
+          "load_amplification": 1.75,
+          "misses": 0,
+          "peak_backlog": 200,
+          "peak_busy_servers": 10,
+          "peak_queue": 190,
+          "queued_attempts_abandoned": 0,
+          "retry_attempts": 150,
+          "retry_budget_misses": 0,
+          "seed": 1,
+          "service_work_after_deadline_seconds": 0.0,
+          "service_work_seconds": 7.0,
+          "success_latency_seconds": {
+            "p50": 0.5000000000000001,
+            "p95": 0.6800000000000003,
+            "p99": 0.7000000000000003
+          },
+          "successes": 200
+        },
+        {
+          "attempt_limit_misses": 0,
+          "attempts": 350,
+          "attempts_completed": 350,
+          "attempts_started": 350,
+          "completions_at_or_after_deadline": 0,
+          "deadline_misses": 0,
+          "last_completion_seconds": 0.7000000000000003,
+          "last_request_terminal_seconds": 0.7000000000000003,
+          "load_amplification": 1.75,
+          "misses": 0,
+          "peak_backlog": 200,
+          "peak_busy_servers": 10,
+          "peak_queue": 190,
+          "queued_attempts_abandoned": 0,
+          "retry_attempts": 150,
+          "retry_budget_misses": 0,
+          "seed": 2,
+          "service_work_after_deadline_seconds": 0.0,
+          "service_work_seconds": 7.0,
+          "success_latency_seconds": {
+            "p50": 0.5000000000000001,
+            "p95": 0.6800000000000003,
+            "p99": 0.7000000000000003
+          },
+          "successes": 200
+        },
+        {
+          "attempt_limit_misses": 0,
+          "attempts": 350,
+          "attempts_completed": 350,
+          "attempts_started": 350,
+          "completions_at_or_after_deadline": 0,
+          "deadline_misses": 0,
+          "last_completion_seconds": 0.7000000000000003,
+          "last_request_terminal_seconds": 0.7000000000000003,
+          "load_amplification": 1.75,
+          "misses": 0,
+          "peak_backlog": 200,
+          "peak_busy_servers": 10,
+          "peak_queue": 190,
+          "queued_attempts_abandoned": 0,
+          "retry_attempts": 150,
+          "retry_budget_misses": 0,
+          "seed": 3,
+          "service_work_after_deadline_seconds": 0.0,
+          "service_work_seconds": 7.0,
+          "success_latency_seconds": {
+            "p50": 0.5000000000000001,
+            "p95": 0.6800000000000003,
+            "p99": 0.7000000000000003
+          },
+          "successes": 200
+        },
+        {
+          "attempt_limit_misses": 0,
+          "attempts": 350,
+          "attempts_completed": 350,
+          "attempts_started": 350,
+          "completions_at_or_after_deadline": 0,
+          "deadline_misses": 0,
+          "last_completion_seconds": 0.7000000000000003,
+          "last_request_terminal_seconds": 0.7000000000000003,
+          "load_amplification": 1.75,
+          "misses": 0,
+          "peak_backlog": 200,
+          "peak_busy_servers": 10,
+          "peak_queue": 190,
+          "queued_attempts_abandoned": 0,
+          "retry_attempts": 150,
+          "retry_budget_misses": 0,
+          "seed": 4,
+          "service_work_after_deadline_seconds": 0.0,
+          "service_work_seconds": 7.0,
+          "success_latency_seconds": {
+            "p50": 0.5000000000000001,
+            "p95": 0.6800000000000003,
+            "p99": 0.7000000000000003
+          },
+          "successes": 200
+        }
+      ]
+    }
+  },
+  "config": {
+    "base_seconds": 0.05,
+    "cap_seconds": 0.5,
+    "clients": 200,
+    "deadline_seconds": 1.0,
+    "max_attempts": 5,
+    "outage_seconds": 0.3,
+    "retry_budget": null,
+    "servers": 10,
+    "service_seconds": 0.02
+  },
+  "schema_version": 1,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ]
+}
