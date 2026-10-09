@@ -1,12 +1,14 @@
 # Retry Budget Lab
 
+[![Tests](https://github.com/skyon0522-ai/retry-budget-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/skyon0522-ai/retry-budget-lab/actions/workflows/ci.yml)
+
 Measure the work, completion rate, and tail latency of retry policies before choosing a retry budget for an AI or cloud client.
 
 This small, standard-library Python experiment sends a simulated burst through a **finite-capacity FIFO service**, with an outage, an end-to-end deadline, a per-request attempt limit, and an optional shared retry cap. It compares capped exponential backoff with full jitter. It makes no network calls and does not sleep.
 
-## Run an experiment
+[Try locally](#try-locally) · [Observed examples](#observed-examples) · [Model and limits](#model-and-limits) · [Development](#development)
 
-[Example results](examples/) · [Method and metric definitions](METHODOLOGY.md) · [CI](https://github.com/skyon0522-ai/retry-budget-lab/actions/workflows/ci.yml)
+## Try locally
 
 Python 3.10 or later; no runtime dependencies or installation required:
 
@@ -14,8 +16,31 @@ Python 3.10 or later; no runtime dependencies or installation required:
 git clone https://github.com/skyon0522-ai/retry-budget-lab.git
 cd retry-budget-lab
 python -m retry_budget_lab --output results.json
-python -m unittest discover -s tests -v
 ```
+
+Selected fields from that output, also recorded in [`examples/default.json`](examples/default.json); other configuration, policy, and metric fields are omitted:
+
+```json
+{
+  "comparisons": {
+    "capped": {
+      "aggregate": {
+        "attempts": { "mean": 350.0 },
+        "load_amplification": { "mean": 1.75 },
+        "misses": { "mean": 0.0 },
+        "successes": { "mean": 200.0 }
+      },
+      "pooled_success_latency_seconds": { "p99": 0.7000000000000003 }
+    }
+  },
+  "seeds": [0, 1, 2, 3, 4]
+}
+```
+
+The aggregates above are means across five runs. The p99 pools **successful requests only**; read it alongside misses. The [observed examples](#observed-examples) compare both policies and include unsuccessful requests.
+
+<details>
+<summary>Optional command installation</summary>
 
 Optional installation adds a command:
 
@@ -24,7 +49,11 @@ python -m pip install .
 retry-budget-lab --clients 40 --base-seconds 0.1 --deadline-seconds 0.6 --seeds 0,1,2,3,4
 ```
 
+</details>
+
 Every result includes its complete configuration, seeds, individual runs, and aggregate metrics. Times are in seconds. The default seeds are `0,1,2,3,4`; supply a different, explicit list for sensitivity analysis. `--max-attempts 1` disables retries. `--retry-budget 0` also admits no retries, while reporting budget exhaustion separately from an attempt limit.
+
+Use `python -m retry_budget_lab --help` for all parameters. See [`METHODOLOGY.md`](METHODOLOGY.md) for metric definitions.
 
 ## Observed examples
 
@@ -44,9 +73,9 @@ The default queue absorbs the different retry timings, so the policies have iden
 Reproduce the three scenarios:
 
 ```sh
-python -m retry_budget_lab --output examples/default.json
-python -m retry_budget_lab --retry-budget 50 --output examples/budget-50.json
-python -m retry_budget_lab --clients 40 --base-seconds 0.1 --deadline-seconds 0.6 --output examples/short-deadline.json
+python -m retry_budget_lab --output default-results.json
+python -m retry_budget_lab --retry-budget 50 --output budget-50-results.json
+python -m retry_budget_lab --clients 40 --base-seconds 0.1 --deadline-seconds 0.6 --output short-deadline-results.json
 ```
 
 All requests arrive together, so peak backlog is the burst size and peak queue is the burst size minus available servers: 200/190 or 40/30 in these examples. This metric does not demonstrate a jitter benefit. The simulator uses individual arrival, completion, and deadline events; it does not infer contention from counts in arbitrary time buckets.
@@ -57,7 +86,10 @@ Use a new output filename for each experiment: writing to an existing output fil
 
 Each JSON result stores the configuration and seeds needed to rerun it. The simulator does not contact a service or change a client configuration; there is no deployed state to restore. Applying a policy to a real client requires the additional checks described below.
 
-## What the model means
+## Model and limits
+
+<details>
+<summary>Service, retry, and deadline rules</summary>
 
 1. All logical requests arrive at time zero. Each admits a first attempt without spending a retry token.
 2. At most `servers` attempts run concurrently; each consumes `service_seconds`. Excess attempts wait in an unbounded FIFO queue.
@@ -66,9 +98,12 @@ Each JSON result stores the configuration and seeds needed to rerun it. The simu
 5. A request may have at most one queued or running attempt. `max_attempts` includes the first attempt. An optional `retry_budget` is a fixed, run-wide cap on **admitted retries**, consumed when a retry arrives. It never refills; this is not adaptive throttling or a token bucket.
 6. The absolute deadline applies to queueing, service, and backoff together. A completion exactly at the deadline is a miss. Expired queued attempts never start; running attempts continue consuming service capacity until completion.
 
+</details>
+
 See [`METHODOLOGY.md`](METHODOLOGY.md) for event ordering, metric definitions, architecture, and limitations.
 
-## References and implementation choices
+<details>
+<summary>References and implementation choices</summary>
 
 The experiment is original code; no upstream implementation was copied. Its inputs and checks were informed by these inspected sources:
 
@@ -78,6 +113,8 @@ The experiment is original code; no upstream implementation was copied. Its inpu
 - Jeffrey Dean and Luiz André Barroso, [The Tail at Scale](https://research.google/pubs/the-tail-at-scale/), *Communications of the ACM* 56 (2013), 74–80: motivates reporting tail latency. The paper is scholarly context; its systems and experiments are not reproduced here.
 
 [`references.bib`](references.bib) contains source citations. [`CITATION.cff`](CITATION.cff) identifies this software. References do not imply endorsement.
+
+</details>
 
 ## Applying this to a client integration
 
