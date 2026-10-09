@@ -89,6 +89,31 @@ class SimulationTests(unittest.TestCase):
     def test_same_seed_is_identical(self):
         self.assertEqual(experiment(Config(), [2, 9]), experiment(Config(), [2, 9]))
 
+    def test_report_keeps_original_seed_provenance(self):
+        seeds = [0, 1]
+        report = experiment(Config(clients=1, outage_seconds=0), seeds)
+        seeds[0] = 999
+        seeds.append(2)
+        self.assertEqual(report["seeds"], [0, 1])
+        for comparison in report["comparisons"].values():
+            self.assertEqual([run["seed"] for run in comparison["runs"]], [0, 1])
+
+    def test_finite_metrics_do_not_overflow_during_aggregation(self):
+        config = Config(
+            clients=1,
+            servers=1,
+            service_seconds=6e307,
+            deadline_seconds=6e307,
+            outage_seconds=0,
+        )
+        report = experiment(config, [0, 1, 2, 3, 4])
+        for comparison in report["comparisons"].values():
+            for key in ("service_work_seconds", "last_completion_seconds"):
+                self.assertEqual(
+                    comparison["aggregate"][key],
+                    {"mean": 6e307, "min": 6e307, "max": 6e307},
+                )
+
     def test_zero_backoff_has_same_semantics_under_both_policies(self):
         config = Config(clients=7, servers=2, base_seconds=0)
         self.assertEqual(simulate(config, "capped", 0), simulate(config, "full-jitter", 8))

@@ -202,16 +202,24 @@ def simulate(config: Config, policy: str, seed: int) -> Run:
     return Run(metrics, latencies, [r.attempts for r in requests])
 
 
+def _mean(values: list[int | float]) -> float:
+    try:
+        return statistics.fmean(values)
+    except OverflowError:
+        return float(statistics.mean(values))
+
+
 def experiment(config: Config, seeds: list[int]) -> dict:
     if not seeds or len(set(seeds)) != len(seeds):
         raise ValueError("seeds must be a nonempty list of distinct integers")
     if any(type(seed) is not int for seed in seeds):
         raise ValueError("seeds must be integers")
+    seeds = list(seeds)
     comparisons = {}
     for policy in POLICIES:
         runs = [simulate(config, policy, seed) for seed in seeds]
         summaries = {
-            key: {"mean": statistics.fmean(values), "min": min(values), "max": max(values)}
+            key: {"mean": _mean(values), "min": min(values), "max": max(values)}
             for key in runs[0].metrics
             for values in [[run.metrics[key] for run in runs]]
         }
