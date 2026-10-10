@@ -199,6 +199,9 @@ def simulate(config: Config, policy: str, seed: int) -> Run:
         "last_completion_seconds": last_completion,
         "last_request_terminal_seconds": last_terminal,
     }
+    for name, value in metrics.items():
+        if isinstance(value, float) and not math.isfinite(value):
+            raise ValueError(f"{name} exceeds the finite float range")
     return Run(metrics, latencies, [r.attempts for r in requests])
 
 

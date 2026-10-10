@@ -1,8 +1,10 @@
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from dataclasses import replace
+from pathlib import Path
 
 from retry_budget_lab import Config, experiment, latency_summary, simulate
 
@@ -113,6 +115,48 @@ class SimulationTests(unittest.TestCase):
                     comparison["aggregate"][key],
                     {"mean": 6e307, "min": 6e307, "max": 6e307},
                 )
+
+    def test_nonfinite_calculated_metrics_are_rejected_before_output(self):
+        config = Config(
+            clients=3,
+            servers=3,
+            service_seconds=6e307,
+            deadline_seconds=6e307,
+            outage_seconds=0,
+        )
+        with self.assertRaisesRegex(ValueError, "service_work_seconds.*finite float range"):
+            experiment(config, [0])
+
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "result.json"
+            output.write_text("preserve this\n", encoding="utf-8")
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "retry_budget_lab",
+                    "--clients",
+                    "3",
+                    "--servers",
+                    "3",
+                    "--service-seconds",
+                    "6e307",
+                    "--deadline-seconds",
+                    "6e307",
+                    "--outage-seconds",
+                    "0",
+                    "--seeds",
+                    "0",
+                    "--output",
+                    str(output),
+                ],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("finite float range", result.stderr)
+            self.assertNotIn("Traceback", result.stderr)
+            self.assertEqual(output.read_text(encoding="utf-8"), "preserve this\n")
 
     def test_zero_backoff_has_same_semantics_under_both_policies(self):
         config = Config(clients=7, servers=2, base_seconds=0)
