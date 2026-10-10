@@ -6,7 +6,7 @@ Measure the work, completion rate, and tail latency of retry policies before cho
 
 This small, standard-library Python experiment sends a simulated burst through a **finite-capacity FIFO service**, with an outage, an end-to-end deadline, a per-request attempt limit, and an optional shared retry cap. It compares capped exponential backoff with full jitter. It makes no network calls and does not sleep.
 
-[Try locally](#try-locally) · [Observed examples](#observed-examples) · [Model and limits](#model-and-limits) · [Development](#development)
+[Try locally](#try-locally) · [Observed examples](#observed-examples) · [Methodology](METHODOLOGY.md) · [Model and limits](#model-and-limits) · [Development](#development)
 
 ## Try locally
 
