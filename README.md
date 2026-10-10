@@ -1,124 +1,96 @@
 # Retry Budget Lab
 
+Compare retry work, completed requests and successful-request latency before
+choosing a client retry policy. This local Python simulation sends a synthetic
+burst through a finite-capacity FIFO service with an outage and a deadline.
+It makes no network calls and does not sleep.
+
 [![Tests](https://github.com/skyon0522-ai/retry-budget-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/skyon0522-ai/retry-budget-lab/actions/workflows/ci.yml)
 
-Measure the work, completion rate, and tail latency of retry policies before choosing a retry budget for an AI or cloud client.
+## Try the comparison
 
-This small, standard-library Python experiment sends a simulated burst through a **finite-capacity FIFO service**, with an outage, an end-to-end deadline, a per-request attempt limit, and an optional shared retry cap. It compares capped exponential backoff with full jitter. It makes no network calls and does not sleep.
+![Actual output from the fixed retry comparison](docs/assets/comparison.png)
 
-[Try locally](#try-locally) · [Observed examples](#observed-examples) · [Methodology](METHODOLOGY.md) · [Model and limits](#model-and-limits) · [Development](#development)
-
-## Try locally
-
-Python 3.10 or later; no runtime dependencies or installation required:
-
-```sh
-git clone https://github.com/skyon0522-ai/retry-budget-lab.git
-cd retry-budget-lab
-python -m retry_budget_lab --output results.json
-```
-
-Selected fields from that output, also recorded in [`examples/default.json`](examples/default.json); other configuration, policy, and metric fields are omitted:
-
-```json
-{
-  "comparisons": {
-    "capped": {
-      "aggregate": {
-        "attempts": { "mean": 350.0 },
-        "load_amplification": { "mean": 1.75 },
-        "misses": { "mean": 0.0 },
-        "successes": { "mean": 200.0 }
-      },
-      "pooled_success_latency_seconds": { "p99": 0.7000000000000003 }
-    }
-  },
-  "seeds": [0, 1, 2, 3, 4]
-}
-```
-
-The aggregates above are means across five runs. The p99 pools **successful requests only**; read it alongside misses. The [observed examples](#observed-examples) compare both policies and include unsuccessful requests.
-
-<details>
-<summary>Optional command installation</summary>
-
-Optional installation adds a command:
+The included scenario has 40 requests arriving together, 10 servers, a
+0.3-second outage and a 0.6-second deadline. It runs capped exponential
+backoff and full jitter with the same five seeds (`0,1,2,3,4`). Python 3.10 or
+later is required; no packages, account or external service are needed. From
+the repository root:
 
 ```sh
-python -m pip install .
-retry-budget-lab --clients 40 --base-seconds 0.1 --deadline-seconds 0.6 --seeds 0,1,2,3,4
+python demo.py --output-dir demo-output
 ```
 
-</details>
+Open `demo-output/report.html` locally. The command also saves the complete
+`report.json` with configuration, each seeded run and aggregates. It refuses an
+existing output directory. You can inspect the committed [offline HTML](examples/reports/report.html)
+and [JSON](examples/reports/report.json) without running Python.
 
-Every result includes its complete configuration, seeds, individual runs, and aggregate metrics. Times are in seconds. The default seeds are `0,1,2,3,4`; supply a different, explicit list for sensitivity analysis. `--max-attempts 1` disables retries. `--retry-budget 0` also admits no retries, while reporting budget exhaustion separately from an attempt limit.
+| Policy | Mean completed / 40 | Mean misses | Mean attempts | Mean retries | Pooled successful p99 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Capped backoff | 40.0 | 0.0 | 120.0 | 80.0 | 0.420 s |
+| Full jitter | 32.0 | 8.0 | 151.4 | 111.4 | 0.594 s |
 
-Use `python -m retry_budget_lab --help` for all parameters. See [`METHODOLOGY.md`](METHODOLOGY.md) for metric definitions.
+These are observed model outputs averaged across five seeded runs; p99 pools
+**only successful** request latencies. In this fixed outage, full jitter admits
+retries earlier, makes more attempts, yet finishes fewer requests before the
+deadline. This is a counterexample to judging a retry policy by timing or
+latency alone. It does not show that capped backoff is better in general.
 
-## Observed examples
+## Read and adapt the experiment
 
-These outputs were generated locally with Python 3.12.3. Each row averages five runs; p99 is the nearest-rank percentile of **pooled successful requests only**. Failure counts must be read alongside latency. Full machine-readable results are checked in under [`examples/`](examples/).
+| Start here | Purpose |
+| --- | --- |
+| [demo.py](demo.py) | Fixed comparison, offline HTML and JSON exports |
+| [retry_budget_lab.py](retry_budget_lab.py) | Configuration, event loop, aggregation and command-line interface |
+| [METHODOLOGY.md](METHODOLOGY.md) | Event ordering, metric definitions and limits |
+| [tests](tests/) | Exact behavior, accounting and example-output checks |
+| [Other recorded scenarios](examples/) | Default and shared-budget outputs as well as this short-deadline result |
 
-| Scenario | Policy | Successes / requests | Attempts | Amplification | Successful p99 | Misses |
-|---|---|---:|---:|---:|---:|---:|
-| Default, queue stays busy | Capped | 200 / 200 | 350 | 1.750 | 0.700 s | 0 |
-| Default, queue stays busy | Full jitter | 200 / 200 | 350 | 1.750 | 0.700 s | 0 |
-| Shared retry budget 50 | Capped | 100 / 200 | 250 | 1.250 | 0.500 s | 100 |
-| Shared retry budget 50 | Full jitter | 100 / 200 | 250 | 1.250 | 0.500 s | 100 |
-| 40 requests, 0.6 s deadline | Capped | 40 / 40 | 120 | 3.000 | 0.420 s | 0 |
-| 40 requests, 0.6 s deadline | Full jitter | 32 / 40 | 151.4 | 3.785 | 0.594 s | 8 |
-
-The default queue absorbs the different retry timings, so the policies have identical totals. The shared cap admits less work but leaves half the requests unsuccessful; its lower successful p99 is not an overall improvement. In the smaller burst, full jitter retries sooner during the outage. Across these five seeds, it completes 31–33 requests, with mean 7.4 deadline misses and 0.6 attempt-limit misses. These outcomes are consequences of this service model, not a ranking of retry policies for every system.
-
-Reproduce the three scenarios:
+The demo calls the same `experiment()` function as the CLI. To run another
+configuration with the same seeds, use:
 
 ```sh
-python -m retry_budget_lab --output default-results.json
+python -m retry_budget_lab --clients 40 --base-seconds 0.1 --deadline-seconds 0.6 --seeds 0,1,2,3,4 --output short-deadline-results.json
 python -m retry_budget_lab --retry-budget 50 --output budget-50-results.json
-python -m retry_budget_lab --clients 40 --base-seconds 0.1 --deadline-seconds 0.6 --output short-deadline-results.json
 ```
 
-All requests arrive together, so peak backlog is the burst size and peak queue is the burst size minus available servers: 200/190 or 40/30 in these examples. This metric does not demonstrate a jitter benefit. The simulator uses individual arrival, completion, and deadline events; it does not infer contention from counts in arbitrary time buckets.
+The CLI can replace an existing `--output` file; use a new filename when
+comparing runs. Each JSON file retains the settings and seeds. Run
+`python -m retry_budget_lab --help` for every parameter. Optional installation
+adds the `retry-budget-lab` command via `python -m pip install .`.
 
-## Repeat and compare runs
+The [default case](examples/default.json) completes 200/200 requests under
+both policies. The [shared-cap case](examples/budget-50.json) admits fewer
+retries but leaves 100/200 requests unsuccessful under both policies. Its
+lower successful p99 must be read with those misses. The short-deadline case
+above makes the timing tradeoff visible. The model never changes a deployed
+client or service.
 
-Use a new output filename for each experiment: writing to an existing output file replaces it. Start from one of the recorded scenarios, change one parameter, and compare completed requests and total attempts before comparing successful-request latency. Keep the seed list fixed for that comparison, then vary it to check sensitivity.
+## What the numbers mean
 
-Each JSON result stores the configuration and seeds needed to rerun it. The simulator does not contact a service or change a client configuration; there is no deployed state to restore. Applying a policy to a real client requires the additional checks described below.
+All requests arrive at time zero. Each attempt occupies one server for a
+fixed duration; attempts started during the outage fail after using that
+capacity. Excess attempts wait in a FIFO queue. An end-to-end deadline covers
+backoff, queueing and service. A completion exactly at the deadline misses.
+Running work can continue after its caller expires.
 
-## Model and limits
+`attempts` counts first attempts and admitted retries; `retry_attempts` counts
+only retries. The optional `retry_budget` is a fixed, run-wide admission cap,
+not an adaptive token bucket. Capped backoff waits for its capped exponential
+window; full jitter draws a seeded delay between zero and that window. The
+simulator records completed requests and all three miss reasons separately.
+See [METHODOLOGY.md](METHODOLOGY.md) for the event path, accounting equations
+and exact percentile definition.
 
-<details>
-<summary>Service, retry, and deadline rules</summary>
-
-1. All logical requests arrive at time zero. Each admits a first attempt without spending a retry token.
-2. At most `servers` attempts run concurrently; each consumes `service_seconds`. Excess attempts wait in an unbounded FIFO queue.
-3. An attempt **starting** before `outage_seconds` fails after consuming its full service time. Later starts succeed. Recovery does not rescue an already running failed attempt.
-4. After failed attempt number `n`, the backoff window is `min(cap_seconds, base_seconds * 2**(n-1))`. Capped backoff waits for that window; full jitter draws uniformly from zero to the window.
-5. A request may have at most one queued or running attempt. `max_attempts` includes the first attempt. An optional `retry_budget` is a fixed, run-wide cap on **admitted retries**, consumed when a retry arrives. It never refills; this is not adaptive throttling or a token bucket.
-6. The absolute deadline applies to queueing, service, and backoff together. A completion exactly at the deadline is a miss. Expired queued attempts never start; running attempts continue consuming service capacity until completion.
-
-</details>
-
-See [`METHODOLOGY.md`](METHODOLOGY.md) for event ordering, metric definitions, architecture, and limitations.
-
-<details>
-<summary>References and implementation choices</summary>
-
-The experiment is original code; no upstream implementation was copied. Its inputs and checks were informed by these inspected sources:
-
-- [Tenacity `wait.py`](https://github.com/jd/tenacity/blob/58c45dc02b33012be37ea634c81e01ae9ccd05a0/tenacity/wait.py) and [`stop.py`](https://github.com/jd/tenacity/blob/58c45dc02b33012be37ea634c81e01ae9ccd05a0/tenacity/stop.py): separate waiting decisions from attempt and deadline limits. This project does not wrap or replace Tenacity.
-- Marc Brooker, [Exponential Backoff And Jitter](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/) (2015): capped backoff and full-jitter definitions. The article models optimistic concurrency contention; this repository models a FIFO service, so it does **not** replicate that experiment or its numerical results.
-- Alejandro Forero Cuervo, [Handling Overload](https://sre.google/sre-book/handling-overload/): finite resource capacity and client-side traffic control motivate making service work and retry admission explicit. The chapter's adaptive throttling algorithm is not implemented here.
-- Jeffrey Dean and Luiz André Barroso, [The Tail at Scale](https://research.google/pubs/the-tail-at-scale/), *Communications of the ACM* 56 (2013), 74–80: motivates reporting tail latency. The paper is scholarly context; its systems and experiments are not reproduced here.
-
-[`references.bib`](references.bib) contains source citations. [`CITATION.cff`](CITATION.cff) identifies this software. References do not imply endorsement.
-
-</details>
-
-## Applying this to a client integration
-
-Use measured arrival patterns, service costs, timeout behavior, and downstream limits before drawing operational conclusions. AI integrations also need explicit policies for idempotency, token/cost limits, streaming, and partially completed operations; this experiment does not model those concerns.
+This model uses one simultaneous burst, identical service times, constant
+capacity, one outage and an unbounded waiting room. It does not model network
+delay, changing arrivals, partial success, overlapping retries, provider
+rate limits, token costs or real workload traces. No checked-in scenario was
+calibrated to a customer or provider. Validate the assumptions with measured
+traffic, downstream limits and idempotency requirements before making an
+operational decision. The research context is in [references.bib](references.bib);
+it does not validate these numerical results.
 
 ## Development
 
@@ -129,6 +101,8 @@ ruff check .
 ruff format --check .
 ```
 
-Tests cover exact one-client and FIFO outcomes, outage recovery, deadline ties, non-cancellable work, zero retries, the shared cap, repeatability, input rejection, and accounting invariants over 90 scenarios. CI is configured for Python 3.10, 3.12, and 3.14; its remote result is separate from the local test result.
-
-Development used OpenAI Codex assistance. The repository contains runnable evidence and explicit modeling choices for independent review. MIT-licensed original code.
+The tests cover exact FIFO and deadline behavior, retry budgets, repeatability,
+input rejection, conservation across 90 scenarios and the committed demo
+outputs. The [CI workflow](.github/workflows/ci.yml) is configured for Python
+3.10, 3.12 and 3.14; consult its run page for actual remote results. Local code
+is [MIT-licensed](LICENSE).
