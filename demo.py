@@ -84,8 +84,9 @@ def write_demo(output: Path, report: dict) -> None:
     (output / "report.json").write_text(
         json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n",
         encoding="utf-8",
+        newline="\n",
     )
-    (output / "report.html").write_text(render_html(report), encoding="utf-8")
+    (output / "report.html").write_text(render_html(report), encoding="utf-8", newline="\n")
 
 
 def main() -> None:
