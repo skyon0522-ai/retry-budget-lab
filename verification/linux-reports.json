@@ -1,0 +1,35 @@
+{
+  "observed_at_utc": "2026-10-15T01:50:55.168711+00:00",
+  "environment": {
+    "python": "3.12.3",
+    "system": "Linux; Ubuntu 24.04 on WSL2"
+  },
+  "base_commit": "aae22c091550a30175483a85f7b98fc28f9de84f",
+  "local_tests_passed": 27,
+  "historical_json_byte_identical": [
+    "default",
+    "budget-50",
+    "short-deadline"
+  ],
+  "protected_simulator_ast_unchanged": true,
+  "tested_source_wheel_installed_modules": {
+    "retry_budget_lab.py": "0d2583896567d540427edbbc5c449c66c26f60c6a867d5059b9753eddb2fc8fb",
+    "retry_budget_report.py": "824fdc33c1f46b7bc9cc97f800b97f0fb369a6496337af7c30fd28cbbcdc071e"
+  },
+  "wheel_sha256": "984f5244960ee6460f74061b2af911925319dae7e967ec72567eb28e6cba3e87",
+  "original_mit_notice_in_wheel": true,
+  "report_views": {
+    "variants": 4,
+    "desktop_width": 1440,
+    "mobile_width": 390,
+    "actual_json_matches_display": true,
+    "keyboard": "PASS",
+    "javascript_disabled": true,
+    "external_requests": [],
+    "page_errors": []
+  },
+  "new_github_ci": "UNRUN",
+  "new_windows_verification": "UNRUN",
+  "independent_review": "UNRUN",
+  "publication": "NOT_PERFORMED"
+}

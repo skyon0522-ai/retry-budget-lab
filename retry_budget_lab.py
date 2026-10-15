@@ -271,9 +271,14 @@ def main() -> None:
         help="total retry attempts admitted across the whole run",
     )
     parser.add_argument("--seeds", default="0,1,2,3,4")
-    parser.add_argument("--output", type=Path, help="write JSON here instead of stdout")
+    outputs = parser.add_mutually_exclusive_group()
+    outputs.add_argument("--output", type=Path, help="write JSON here instead of stdout")
+    outputs.add_argument("--report-dir", type=Path, help="save HTML and JSON in a new directory")
     args = vars(parser.parse_args())
     output = args.pop("output")
+    report_dir = args.pop("report_dir")
+    if report_dir is not None and (report_dir.exists() or report_dir.is_symlink()):
+        parser.error("Choose a new report directory; existing paths are not replaced.")
     raw_seeds = args.pop("seeds")
     try:
         seeds = [int(value) for value in raw_seeds.split(",")]
@@ -281,7 +286,18 @@ def main() -> None:
     except ValueError as error:
         parser.error(str(error))
     rendered = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
-    if output:
+    if report_dir is not None:
+        from retry_budget_report import write_report
+
+        try:
+            write_report(report_dir, result)
+        except OSError as error:
+            parser.error(f"Cannot save report: {error}. A partial new report directory may remain.")
+        print(
+            f"Saved {(report_dir / 'report.html').resolve()} "
+            f"and {(report_dir / 'report.json').resolve()}"
+        )
+    elif output:
         output.write_text(rendered, encoding="utf-8")
     else:
         print(rendered, end="")

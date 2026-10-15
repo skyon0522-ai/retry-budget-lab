@@ -16,7 +16,7 @@ dependencies = []
 retry-budget-lab = "retry_budget_lab:main"
 
 [tool.setuptools]
-py-modules = ["retry_budget_lab"]
+py-modules = ["retry_budget_lab", "retry_budget_report"]
 
 [tool.ruff]
 line-length = 100

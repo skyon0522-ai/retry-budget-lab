@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
 <title>Retry policy comparison</title>
 <style>
 body{font:16px/1.55 system-ui,sans-serif;margin:0;background:#f4f7fb;color:#182736}
@@ -9,31 +10,49 @@ p{max-width:75ch}
 .panel{background:white;border:1px solid #d1dce8;border-radius:.6rem}
 .panel{padding:1.5rem;margin:1.2rem 0}
 .scroll{overflow:auto;max-width:100%}
-.scroll:focus-visible,a:focus-visible{outline:3px solid #155b87;outline-offset:2px}
+.scroll:focus-visible,a:focus-visible,summary:focus-visible{
+outline:3px solid #155b87;outline-offset:2px}
 table{border-collapse:collapse;width:100%;min-width:43rem}
 th,td{text-align:left;padding:.7rem;border-bottom:1px solid #d1dce8}
 thead{background:#eaf1f8}code{overflow-wrap:anywhere}a{color:#155b87}
+summary{cursor:pointer;font-weight:600}.settings{min-width:0}
 @media(max-width:600px){main{padding:1rem .5rem}.panel{padding:1rem}}
 @media print{body{background:white}main{max-width:none;padding:0}.panel{border:0;padding:0}}
 </style></head><body><main>
 <h1>Retry budget comparison</h1>
-<p>Forty simulated requests arrive together. Ten servers take 0.02 seconds per attempt;
-an attempt started before 0.3 seconds fails, and each request has a 0.6-second deadline.
-Both policies use the same five seeds (0–4).</p>
+<p>Simulated requests: 40, all arriving at time zero.
+Server count: 10; service time:
+0.02 seconds per attempt.
+An attempt started before 0.3
+seconds fails; each request has a 0.6-second deadline.
+Seeds for both policies: <code>0, 1, 2, 3, 4</code>.</p>
 <section class="panel"><h2>Observed model output</h2>
 <div class="scroll" role="region" aria-label="Retry policy comparison table" tabindex="0"><table>
 <thead><tr><th scope="col">Policy</th><th scope="col">Mean completed</th>
 <th scope="col">Mean missed</th><th scope="col">Mean attempts</th>
 <th scope="col">Mean retries</th><th scope="col">Pooled successful p99</th></tr></thead>
 <tbody><tr><th scope='row'>Capped backoff</th><td>40.0 / 40</td><td>0.0</td><td>120.0</td><td>80.0</td><td>0.420 s</td></tr><tr><th scope='row'>Full jitter</th><td>32.0 / 40</td><td>8.0</td><td>151.4</td><td>111.4</td><td>0.594 s</td></tr></tbody></table></div>
-<p>Full jitter admits retries earlier in this outage. It makes more attempts yet finishes
-fewer requests before the deadline. The p99 pools successful requests across the five
-seeds; read it with the missed-request count.</p>
-<p><a href="report.json">Inspect the full configuration, five individual runs and
-aggregate JSON</a>.</p></section>
+<p>On small screens, swipe the table sideways or focus it and use the arrow keys
+to read all columns.</p>
+<p>Read completed requests, misses and admitted attempts together. The p99 pools
+only successful request latencies across seeds; it excludes every missed request.
+No successes means there is no successful-request percentile, not zero latency.</p>
+<p><a href="report.json">Inspect the full configuration, individual runs and aggregate JSON</a>.</p>
+</section>
+<details class="panel"><summary>Configuration and seeds</summary>
+<table class="settings"><caption>Settings used for this run</caption>
+<tbody><tr><th scope='row'>Requests</th><td>40</td></tr><tr><th scope='row'>Servers</th><td>10</td></tr><tr><th scope='row'>Service seconds per attempt</th><td>0.02</td></tr><tr><th scope='row'>Outage seconds</th><td>0.3</td></tr><tr><th scope='row'>Deadline seconds</th><td>0.6</td></tr><tr><th scope='row'>Maximum attempts per request</th><td>5</td></tr><tr><th scope='row'>Initial backoff seconds</th><td>0.1</td></tr><tr><th scope='row'>Backoff cap seconds</th><td>0.5</td></tr><tr><th scope='row'>Shared retry admission cap</th><td>Unlimited</td></tr></tbody></table>
+<p>Seeds: <code>0, 1, 2, 3, 4</code>. Each seed has equal request counts.
+Capped backoff is deterministic; different seeds do not change its result.</p></details>
+<details class="panel"><summary>Individual seeded runs</summary>
+<div class="scroll" role="region" aria-label="Individual seeded runs table" tabindex="0"><table>
+<thead><tr><th scope='col'>Policy</th><th scope='col'>Seed</th><th scope='col'>Completed</th><th scope='col'>Missed</th><th scope='col'>Attempts</th><th scope='col'>Retries</th><th scope='col'>Successful p99</th></tr></thead>
+<tbody><tr><td>Capped backoff</td><td>0</td><td>40</td><td>0</td><td>120</td><td>80</td><td>0.420 s</td></tr><tr><td>Capped backoff</td><td>1</td><td>40</td><td>0</td><td>120</td><td>80</td><td>0.420 s</td></tr><tr><td>Capped backoff</td><td>2</td><td>40</td><td>0</td><td>120</td><td>80</td><td>0.420 s</td></tr><tr><td>Capped backoff</td><td>3</td><td>40</td><td>0</td><td>120</td><td>80</td><td>0.420 s</td></tr><tr><td>Capped backoff</td><td>4</td><td>40</td><td>0</td><td>120</td><td>80</td><td>0.420 s</td></tr><tr><td>Full jitter</td><td>0</td><td>32</td><td>8</td><td>148</td><td>108</td><td>0.595 s</td></tr><tr><td>Full jitter</td><td>1</td><td>31</td><td>9</td><td>151</td><td>111</td><td>0.590 s</td></tr><tr><td>Full jitter</td><td>2</td><td>32</td><td>8</td><td>150</td><td>110</td><td>0.594 s</td></tr><tr><td>Full jitter</td><td>3</td><td>33</td><td>7</td><td>149</td><td>109</td><td>0.557 s</td></tr><tr><td>Full jitter</td><td>4</td><td>32</td><td>8</td><td>159</td><td>119</td><td>0.587 s</td></tr></tbody></table></div>
+<p>These are observed runs, not confidence intervals. The pooled p99 above is not
+the average of the per-run p99 values.</p></details>
 <section class="panel"><h2>What this means</h2>
-<p>This fixed FIFO/outage model shows why retry timing, downstream work and missed
-deadlines must be considered together. It makes no network calls. It is not calibrated
-to a customer or provider and does not establish a generally superior retry policy
-or production SLO.</p>
+<p>This FIFO/outage model shows why retry timing, downstream work and missed
+deadlines must be considered together. A completion exactly at the deadline misses.
+It makes no network calls. It is not calibrated to a customer or provider and does
+not establish a generally superior retry policy or production SLO.</p>
 </section></main></body></html>

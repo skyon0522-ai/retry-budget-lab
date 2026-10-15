@@ -18,7 +18,7 @@ later is required; no packages, account or external service are needed. From
 the repository root:
 
 ```sh
-python demo.py --output-dir demo-output
+python3 demo.py --output-dir demo-output
 ```
 
 Open `demo-output/report.html` locally. The command also saves the complete
@@ -44,6 +44,7 @@ latency alone. It does not show that capped backoff is better in general.
 | [demo.py](demo.py) | Fixed comparison, offline HTML and JSON exports |
 | [retry_budget_lab.py](retry_budget_lab.py) | Configuration, event loop, aggregation and command-line interface |
 | [METHODOLOGY.md](METHODOLOGY.md) | Event ordering, metric definitions and limits |
+| [VALIDATION.md](VALIDATION.md) | Recorded Linux installation, tests and report checks |
 | [tests](tests/) | Exact behavior, accounting and example-output checks |
 | [Other recorded scenarios](examples/) | Default and shared-budget outputs as well as this short-deadline result |
 
@@ -51,14 +52,45 @@ The demo calls the same `experiment()` function as the CLI. To run another
 configuration with the same seeds, use:
 
 ```sh
-python -m retry_budget_lab --clients 40 --base-seconds 0.1 --deadline-seconds 0.6 --seeds 0,1,2,3,4 --output short-deadline-results.json
-python -m retry_budget_lab --retry-budget 50 --output budget-50-results.json
+python3 -m retry_budget_lab --clients 40 --base-seconds 0.1 --deadline-seconds 0.6 --seeds 0,1,2,3,4 --report-dir short-deadline-report
+python3 -m retry_budget_lab --retry-budget 50 --report-dir budget-50-report
 ```
 
-The CLI can replace an existing `--output` file; use a new filename when
-comparing runs. Each JSON file retains the settings and seeds. Run
-`python -m retry_budget_lab --help` for every parameter. Optional installation
-adds the `retry-budget-lab` command via `python -m pip install .`.
+Open `report.html` in each new directory. The report shows the actual settings,
+both policies and every seeded run; the paired JSON retains all metrics. There
+is no web server, JavaScript, account or network request. Use a new directory for
+each comparison: an existing file, directory or symbolic link is refused before
+the simulation runs. An I/O failure can leave a partial new directory; inspect
+it and choose a new path before repeating the command.
+
+`--report-dir` and `--output` are mutually exclusive. Omit both for JSON on stdout,
+or use `--output run.json` for JSON only. The latter can replace an existing file;
+use a new filename when comparing runs. A completed simulation returns exit code
+0 even when requests miss their deadline. Invalid input and report I/O errors
+return 2; inspect the metrics to assess a policy. Run
+`python3 -m retry_budget_lab --help` for every parameter.
+
+## Install on Linux
+
+Python 3.10 or later and its `venv` support are required. Clone the repository,
+then create an isolated environment. The runtime has no third-party dependencies;
+pip may download setuptools while building the package.
+
+```sh
+git clone https://github.com/skyon0522-ai/retry-budget-lab.git
+cd retry-budget-lab
+python3 -m venv .venv
+.venv/bin/python -m pip install .
+project_dir="$PWD"
+run_dir="$(mktemp -d)"
+cd "$run_dir"
+"$project_dir/.venv/bin/retry-budget-lab" --clients 40 --base-seconds 0.1 --deadline-seconds 0.6 --report-dir comparison
+```
+
+Open `comparison/report.html` from the printed path in a browser. On a machine
+without a graphical browser, copy the directory to one with a browser; keep
+`report.json` beside the HTML. The command works outside the source checkout.
+The fixed `demo.py` remains a source-only shortcut for the example above.
 
 The [default case](examples/default.json) completes 200/200 requests under
 both policies. The [shared-cap case](examples/budget-50.json) admits fewer
@@ -94,15 +126,20 @@ it does not validate these numerical results.
 
 ## Development
 
+Run these commands from the repository root, using the environment created above.
+
 ```sh
-python -m unittest discover -s tests -v
-python -m pip install ruff==0.16.10
-ruff check .
-ruff format --check .
+.venv/bin/python -m unittest discover -s tests -v
+.venv/bin/python -m pip install ruff==0.16.10
+.venv/bin/ruff check .
+.venv/bin/ruff format --check .
 ```
 
 The tests cover exact FIFO and deadline behavior, retry budgets, repeatability,
 input rejection, conservation across 90 scenarios and the committed demo
-outputs. The [CI workflow](.github/workflows/ci.yml) is configured for Python
-3.10, 3.12 and 3.14; consult its run page for actual remote results. Local code
-is [MIT-licensed](LICENSE).
+outputs. Report checks cover custom settings, absent successful percentiles,
+preserved existing output and partial I/O failure. The [CI workflow](.github/workflows/ci.yml)
+is configured for Python 3.10, 3.12 and 3.14, including installed report output
+outside the checkout. Consult its run page for actual remote results; newly
+staged workflow steps have not run on GitHub. The scoped local evidence is in
+[VALIDATION.md](VALIDATION.md). Local code is [MIT-licensed](LICENSE).
