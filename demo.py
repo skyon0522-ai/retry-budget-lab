@@ -24,7 +24,10 @@ def main() -> None:
     if args.output_dir.exists():
         parser.error("Choose a new output directory; existing paths are not replaced.")
     report = build_report()
-    write_demo(args.output_dir, report)
+    try:
+        write_demo(args.output_dir, report)
+    except OSError as error:
+        parser.error(f"Cannot save report: {error}. A partial new report directory may remain.")
     capped = report["comparisons"]["capped"]["aggregate"]
     jitter = report["comparisons"]["full-jitter"]["aggregate"]
     print(
