@@ -138,8 +138,10 @@ Run these commands from the repository root, using the environment created above
 The tests cover exact FIFO and deadline behavior, retry budgets, repeatability,
 input rejection, conservation across 90 scenarios and the committed demo
 outputs. Report checks cover custom settings, absent successful percentiles,
-preserved existing output and partial I/O failure. The [CI workflow](.github/workflows/ci.yml)
-is configured for Python 3.10, 3.12 and 3.14, including installed report output
-outside the checkout. Consult its run page for actual remote results; newly
-staged workflow steps have not run on GitHub. The scoped local evidence is in
-[VALIDATION.md](VALIDATION.md). Local code is [MIT-licensed](LICENSE).
+preserved existing output and partial I/O failure. The
+[GitHub CI run](https://github.com/skyon0522-ai/retry-budget-lab/actions/runs/38686785815)
+succeeded on Python 3.10, 3.12 and 3.14 at
+[commit `3a766d4`](https://github.com/skyon0522-ai/retry-budget-lab/commit/3a766d46eec0912582cd5290fe397abc8d3da4dd),
+including installed report output outside the checkout. Results checked on
+2026-10-18. The scoped local evidence is in [VALIDATION.md](VALIDATION.md).
+Local code is [MIT-licensed](LICENSE).

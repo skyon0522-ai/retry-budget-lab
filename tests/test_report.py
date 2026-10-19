@@ -122,6 +122,27 @@ class ReportTests(unittest.TestCase):
             self.assertEqual(json.loads((target / "report.json").read_text())["seeds"], [0])
             self.assertFalse((target / "report.html").exists())
 
+    def test_json_output_io_errors_are_clear_and_preserve_existing_files(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            directory = root / "existing"
+            directory.mkdir()
+            sentinel = directory / "previous.json"
+            sentinel.write_bytes(b"previous experiment\n")
+            for target in (root / "missing" / "run.json", directory):
+                with self.subTest(target=target):
+                    code, stdout, stderr = self.invoke(
+                        ["--clients", "1", "--seeds", "0", "--output", str(target)]
+                    )
+                    self.assertEqual(code, 2)
+                    self.assertEqual(stdout, "")
+                    self.assertIn("Cannot save JSON", stderr)
+                    self.assertIn(str(target), stderr)
+                    self.assertNotIn("Traceback", stderr)
+            self.assertFalse((root / "missing").exists())
+            self.assertEqual(list(directory.iterdir()), [sentinel])
+            self.assertEqual(sentinel.read_bytes(), b"previous experiment\n")
+
     def test_renderer_escapes_displayed_text(self):
         report = experiment(Config(clients=1, outage_seconds=0), [0])
         report["seeds"] = ["<script>alert(1)</script>"]

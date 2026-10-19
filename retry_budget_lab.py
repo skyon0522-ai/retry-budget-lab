@@ -298,7 +298,10 @@ def main() -> None:
             f"and {(report_dir / 'report.json').resolve()}"
         )
     elif output:
-        output.write_text(rendered, encoding="utf-8")
+        try:
+            output.write_text(rendered, encoding="utf-8")
+        except OSError as error:
+            parser.error(f"Cannot save JSON: {error}")
     else:
         print(rendered, end="")
 

@@ -45,6 +45,12 @@ are refused rather than replaced. The JSON-only `--output` mode retains its
 existing replacement behavior. A valid simulation returns 0 even if requests
 miss; invalid input and report I/O errors return 2.
 
-The new CI configuration has been checked locally but has not executed on
-GitHub. This increment has no new Windows verification or independent review.
-The local artifact and source checks do not imply publication or Human approval.
+The [GitHub CI run](https://github.com/skyon0522-ai/retry-budget-lab/actions/runs/38686785815)
+completed successfully on 2026-10-15 for
+[commit `3a766d4`](https://github.com/skyon0522-ai/retry-budget-lab/commit/3a766d46eec0912582cd5290fe397abc8d3da4dd).
+Python 3.10, 3.12 and 3.14 passed the test and installed-command report steps;
+Ruff ran on Python 3.12. These results were checked on 2026-10-18.
+
+This local record does not include new Windows verification or an independent
+review of the 2026-10-15 increment. Local artifact and source checks alone do
+not establish publication or Human approval.
