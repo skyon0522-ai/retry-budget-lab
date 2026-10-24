@@ -137,7 +137,7 @@ class ReportTests(unittest.TestCase):
                     self.assertEqual(code, 2)
                     self.assertEqual(stdout, "")
                     self.assertIn("Cannot save JSON", stderr)
-                    self.assertIn(str(target), stderr)
+                    self.assertIn(repr(str(target)), stderr)
                     self.assertNotIn("Traceback", stderr)
             self.assertFalse((root / "missing").exists())
             self.assertEqual(list(directory.iterdir()), [sentinel])
