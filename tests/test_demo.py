@@ -17,9 +17,17 @@ class DemoTests(unittest.TestCase):
             parent_file.write_bytes(b"leave intact")
             target = parent_file / "report"
             result = subprocess.run(
-                [sys.executable, "-B", str(ROOT / "demo.py"), "--output-dir", str(target)],
+                [
+                    sys.executable,
+                    "-B",
+                    "-X",
+                    "utf8",
+                    str(ROOT / "demo.py"),
+                    "--output-dir",
+                    str(target),
+                ],
                 capture_output=True,
-                text=True,
+                encoding="utf-8",
                 timeout=10,
             )
             self.assertEqual(result.returncode, 2)
